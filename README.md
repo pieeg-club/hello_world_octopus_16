@@ -2,9 +2,10 @@
 
 **16 channels of 24-bit wireless EEG in a 26 mm coin-sized sensor. Zero gel, zero ear clips, zero backend required.**
 
-Built for university hackathons: **clone → stream live 16-ch EEG (or run the 250 Hz simulator) → paste a prompt into Copilot / Claude Code / Cursor → ship a working BCI app in under 60 seconds.**
+Built for hackathons: **clone → stream live 16-ch EEG (or run the 250 Hz simulator) → paste a prompt into Copilot / Claude Code / Cursor → ship a working BCI app in under 60 seconds.**
 
 > **Quick Jump:** [1. Clone & Run (30s)](#-step-1-clone--run-in-30-seconds) · [2. Pick an AI Prompt & Build](#-step-2-build-your-hackathon-app-with-ai-click-a-prompt) · [3. Place Sensor on Head](#-step-3-wearing-octopus-16-hardware-cheat-sheet) · [Python Track](#-python--ml-track-bleak--numpy--csv--lsl) · [Minimal SDK Code](#-minimal-pieegjs-snippet)
+<img width="1920" height="994" alt="image" src="https://github.com/user-attachments/assets/3d1830a3-65de-48b6-a6e0-5903c732d9be" />
 
 ---
 

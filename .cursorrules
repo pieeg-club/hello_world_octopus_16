@@ -1,0 +1,16 @@
+# Cursor Rules for Octopus 16 BCI Hackathon Starter (hello_world_octopus_16)
+
+Always consult `AGENTS.md` for full Octopus 16 hardware specs, BLE packet framing, 16-pin hexagonal coordinates, and `pieeg.js` SDK documentation.
+
+## Core Engineering Rules
+1. **SDK Usage:** Load `./pieeg.js`. Connect hardware via `await eeg.connectBLE({ device: 'octopus-16' })` (inside a click handler) and always provide `await eeg.connectSimulator({ device: 'octopus-16' })` for hardware-free testing.
+2. **Performance (250 Hz × 16 Channels):**
+   - `eeg.onData((channels, t) => ...)` fires 250 times/sec. NEVER call `useState`, DOM manipulation, or heavy allocations inside `onData`.
+   - Use `eeg.channelBuffers[ch].copyLatestTo(float64Buffer)` inside `requestAnimationFrame` for 60 fps `<canvas>` rendering.
+   - Use `eeg.onBandPowers((powers, spectrum) => ...)` (15 Hz) for HUD/UI state updates.
+3. **Spatial & Contact Awareness:**
+   - Octopus 16 has 18 dry spring-loaded pogo pins (16 signal + 1 REF + 1 GND) in a 20×20 mm hexagonal array (`PiEEG.OCTOPUS_16_PINS`).
+   - Use `eeg.getContactQuality()` to show per-pin contact status (`good`: 2–150 µV RMS, `railed`: >150 µV, `flat`: <2 µV).
+   - Use `eeg.computeLaplacian(channels)` when local cortical SNR needs sharpening.
+4. **Biometric Integrity:**
+   - Do not confuse forehead EMG / jaw clenches with cognitive Beta focus. Gate band-power ratios when instantaneous amplitude exceeds `±110 µV` or when `Gamma` surges from muscle tension.

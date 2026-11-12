@@ -1,0 +1,989 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hello Octopus 16 — 60s BCI Hackathon Workbench (pieeg.js)</title>
+  <script src="./pieeg.js"></script>
+  <style>
+    :root {
+      --bg: #070b14;
+      --panel: #0f1626;
+      --panel-border: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --purple: #8b5cf6;
+      --cyan: #06b6d4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px 16px;
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: radial-gradient(circle at 30% 30%, #38bdf8, #6366f1);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 15px;
+      color: #fff;
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
+    }
+    .brand h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    button, select {
+      background: #1e293b;
+      color: var(--text);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px 13px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    button:hover { background: #334155; border-color: #475569; }
+    button.primary {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      border-color: #38bdf8;
+      color: #fff;
+    }
+    button.primary:hover { filter: brightness(1.1); }
+    button.sim {
+      background: linear-gradient(135deg, #059669, #10b981);
+      border-color: #34d399;
+      color: #fff;
+    }
+    button.danger {
+      background: #7f1d1d;
+      border-color: #ef4444;
+      color: #fecaca;
+    }
+    button.active-pill {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .telemetry-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+    }
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 9px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+    .stat-value {
+      font-size: 16px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .sim-controls {
+      display: none;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 12px;
+    }
+    .sim-controls.visible { display: flex; }
+    .sim-controls span.tag {
+      color: #34d399;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 12px;
+      flex: 1;
+    }
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    canvas {
+      width: 100%;
+      background: #050811;
+      border: 1px solid #151f32;
+      border-radius: 8px;
+      display: block;
+    }
+    #scopeCanvas { height: 420px; }
+    #hexCanvas { height: 250px; }
+    #fftCanvas { height: 195px; }
+    #bciCanvas { height: 145px; }
+    .event-log {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+      color: #cbd5e1;
+      background: #050811;
+      border: 1px solid #151f32;
+      border-radius: 6px;
+      padding: 6px 10px;
+      height: 56px;
+      overflow-y: auto;
+    }
+    .footer-note {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      padding: 2px 4px;
+    }
+    kbd {
+      background: #1e293b;
+      border: 1px solid #475569;
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 11px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-badge">O16</div>
+      <div>
+        <h1>Hello Octopus 16 — BCI Hackathon Workbench</h1>
+        <p>16 Dry Pogo Pins · 2 × ADS131M08 (24-bit @ 250 Hz) · XIAO ESP32-S3 BLE · Powered by <code>pieeg.js</code></p>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button id="btnConnectBle" class="primary">Connect Octopus 16 (BLE)</button>
+      <button id="btnConnectSim" class="sim">Start 250 Hz Simulator</button>
+      <button id="btnDisconnect" class="danger" style="display:none;">Disconnect</button>
+      <button id="btnLaplacian" title="Hexagonal Surface Laplacian (Current Source Density)">Laplacian: OFF</button>
+      <select id="selNotch" title="Mains Interference IIR Notch Filter">
+        <option value="50">Notch: 50 Hz (EU)</option>
+        <option value="60">Notch: 60 Hz (US)</option>
+        <option value="0">Notch: OFF</option>
+      </select>
+      <select id="selScale" title="Oscilloscope Vertical Scale">
+        <option value="50">Scale: ±50 µV</option>
+        <option value="100" selected>Scale: ±100 µV</option>
+        <option value="250">Scale: ±250 µV</option>
+      </select>
+      <button id="btnRecordCsv">Record CSV</button>
+    </div>
+  </header>
+
+  <div id="simBar" class="sim-controls">
+    <span class="tag">SIMULATOR CONTROLS:</span>
+    <button id="btnSimAlpha">Eyes Closed Alpha 10 Hz (<kbd>A</kbd>): OFF</button>
+    <button id="btnSimBlink">Inject Eye Blink (<kbd>Space</kbd>)</button>
+    <button id="btnSimClench">Inject Jaw Clench EMG (<kbd>C</kbd>)</button>
+    <button id="btnSimPin">Toggle Noisy Pin #4 (<kbd>P</kbd>)</button>
+    <span style="color:var(--muted);margin-left:auto;">Use this mode so all 4 hackathon teammates can code simultaneously!</span>
+  </div>
+
+  <div class="telemetry-bar">
+    <div class="stat-card">
+      <span class="stat-label">Connection Status</span>
+      <span class="stat-value" id="statStatus" style="color:var(--muted)">Idle (Click BLE or Sim)</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Sample Rate (Measured)</span>
+      <span class="stat-value" id="statRate">0.0 SPS</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Samples / Dropped</span>
+      <span class="stat-value" id="statPackets">0 / 0 (0.0%)</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Pogo Contact (2–150 µV)</span>
+      <span class="stat-value" id="statContact">-- / 16 Good</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Dominant Peak / α Power</span>
+      <span class="stat-value" id="statAlpha">-- Hz · 0.0 µV²</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">α/(α+β) Relax · β/(β+θ) Ratio</span>
+      <span class="stat-value" id="statRatios">0.50 · 0.50</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- Left Column: 16-Channel 60fps Oscilloscope + BCI Interactive Sandbox -->
+    <div class="col">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>16-Channel Real-Time Oscilloscope (60 fps Canvas, Zero-GC Ring Buffer)</span>
+          </div>
+          <span class="panel-sub">CH1–CH8: ADC1 · CH9–CH16: ADC2 · Hampel + 1–40 Hz Butterworth Bandpass</span>
+        </div>
+        <canvas id="scopeCanvas"></canvas>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>Live BCI Neuro-Controller Sandbox (Alpha Charge Orb + Blink Trigger + Artifact Gate)</span>
+          </div>
+          <span class="panel-sub">Close eyes (or press <kbd>A</kbd>) to charge Alpha Orb · Blink (<kbd>Space</kbd>) to pulse</span>
+        </div>
+        <canvas id="bciCanvas"></canvas>
+        <div class="event-log" id="eventLog">[Ready] Connect Octopus 16 via BLE or click "Start 250 Hz Simulator" to begin streaming.</div>
+      </div>
+    </div>
+
+    <!-- Right Column: 18-Pin Hexagonal Pogo Array + FFT Spectrum & Band Powers -->
+    <div class="col">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>26 mm Hexagonal 18-Pin Pogo Array (True Physical mm Geometry)</span>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button id="btnHexModeContact" class="active-pill" style="padding:4px 8px;font-size:11px;">Contact RMS (µV)</button>
+            <button id="btnHexModeAlpha" style="padding:4px 8px;font-size:11px;">Alpha Heatmap</button>
+          </div>
+        </div>
+        <canvas id="hexCanvas"></canvas>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>FFT Power Spectral Density (0–50 Hz) & Band Powers</span>
+          </div>
+          <span class="panel-sub">256-pt Hanning Cooley-Tukey FFT · Precomputed Twiddles</span>
+        </div>
+        <canvas id="fftCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <span>⚡ <strong>Safety:</strong> Always power Octopus 16 from a 5 V battery power bank while worn on the head.</span>
+    <span>🤖 <strong>AI-Ready Repo:</strong> Point Copilot, Claude Code, or Cursor to <code>AGENTS.md</code> and <code>PROMPTS.md</code> to build full BCI apps in 1 prompt.</span>
+  </div>
+
+  <script>
+    // ═════════════════════════════════════════════════════════════════════════
+    // 1. Initialize PiEEG SDK Instance
+    // ═════════════════════════════════════════════════════════════════════════
+    const eeg = new PiEEG({
+      fftSize: 256,
+      updateHz: 15,
+      bufferSeconds: 4,
+      filter: {
+        hampel: { enabled: true, windowSize: 5, nSigma: 3.0 },
+        bandpass: { low: 1, high: 40, order: 5 },
+        notch: 50,
+      },
+    });
+
+    // UI State & Pre-allocated Render Buffers (Zero GC in 60fps loop!)
+    const SCOPE_SECONDS = 4;
+    const SCOPE_SAMPLES = 250 * SCOPE_SECONDS; // 1000 samples per channel
+    const scopeScratch = Array.from({ length: 16 }, () => new Float64Array(SCOPE_SAMPLES));
+
+    let useLaplacian = false;
+    let verticalScaleUv = 100;
+    let hexMode = 'contact'; // 'contact' | 'alpha'
+    let latestContact = [];
+    let latestPowers = { Delta: 0, Theta: 0, Alpha: 0, Beta: 0, Gamma: 0 };
+    let latestSpectrum = null;
+
+    // BCI Sandbox State (Alpha Orb + Blink + Clench Detector)
+    let orbCharge = 0.2;
+    let blinkPulseRadius = 0;
+    let lastBlinkMs = 0;
+    let lastClenchMs = 0;
+    let blinkCount = 0;
+    let artifactGated = false;
+
+    // CSV Recorder State
+    let isRecordingCsv = false;
+    let csvRows = [];
+
+    // DOM Elements
+    const btnConnectBle = document.getElementById('btnConnectBle');
+    const btnConnectSim = document.getElementById('btnConnectSim');
+    const btnDisconnect = document.getElementById('btnDisconnect');
+    const btnLaplacian = document.getElementById('btnLaplacian');
+    const selNotch = document.getElementById('selNotch');
+    const selScale = document.getElementById('selScale');
+    const btnRecordCsv = document.getElementById('btnRecordCsv');
+    const simBar = document.getElementById('simBar');
+    const btnSimAlpha = document.getElementById('btnSimAlpha');
+    const btnSimBlink = document.getElementById('btnSimBlink');
+    const btnSimClench = document.getElementById('btnSimClench');
+    const btnSimPin = document.getElementById('btnSimPin');
+    const eventLog = document.getElementById('eventLog');
+
+    function logEvent(msg) {
+      const time = new Date().toLocaleTimeString();
+      const line = document.createElement('div');
+      line.textContent = `[${time}] ${msg}`;
+      eventLog.prepend(line);
+      while (eventLog.children.length > 25) {
+        eventLog.removeChild(eventLog.lastChild);
+      }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 2. High-Rate Sample Callback (250 Hz) — Keep Ultra-Lightweight!
+    // ═════════════════════════════════════════════════════════════════════════
+    eeg.onData((channels, timestampSec) => {
+      // 1. Optional CSV recording in memory
+      if (isRecordingCsv) {
+        csvRows.push(timestampSec.toFixed(4) + ',' + channels.map((v) => v.toFixed(2)).join(','));
+      }
+
+      // 2. Fast Time-Domain Blink Detector (mean across anterior pins or global peak > 115 µV)
+      const nowMs = performance.now();
+      let maxAbs = 0;
+      for (let i = 0; i < channels.length; i++) {
+        const a = Math.abs(channels[i]);
+        if (a > maxAbs) maxAbs = a;
+      }
+
+      if (maxAbs > 115 && nowMs - lastBlinkMs > 320) {
+        lastBlinkMs = nowMs;
+        blinkCount++;
+        blinkPulseRadius = 1.0;
+        logEvent(`👀 Blink / Transient Detected! Peak=${maxAbs.toFixed(0)} µV (Total: ${blinkCount})`);
+      }
+    });
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 3. Spectral Callback (15 Hz) — Update HUD & BCI State
+    // ═════════════════════════════════════════════════════════════════════════
+    eeg.onBandPowers((powers, spectrum) => {
+      latestPowers = powers;
+      latestSpectrum = spectrum;
+      latestContact = eeg.getContactQuality(125);
+
+      // Artifact gate: if Gamma power or RMS is huge (jaw clench / motion), freeze cognitive ratio
+      const meanRms = latestContact.reduce((acc, c) => acc + c.rms, 0) / (latestContact.length || 1);
+      artifactGated = meanRms > 90 || powers.Gamma > (powers.Alpha + powers.Beta) * 1.2;
+
+      if (artifactGated && performance.now() - lastClenchMs > 1000) {
+        lastClenchMs = performance.now();
+        logEvent(`⚡ Muscle / Motion Artifact Gate Active (Mean RMS=${meanRms.toFixed(1)} µV)`);
+      }
+
+      const relaxIdx = eeg.getRelaxationIndex();
+      const focusIdx = eeg.getFocusIndex();
+
+      if (!artifactGated) {
+        // Charge Alpha Orb smoothly when Alpha > Beta
+        const target = Math.max(0.08, Math.min(1.0, (relaxIdx - 0.35) * 1.8));
+        orbCharge = orbCharge * 0.82 + target * 0.18;
+      }
+
+      // Update Telemetry Bar (15 Hz is safe for textContent updates)
+      const stats = eeg.getStats();
+      const goodPins = latestContact.filter((c) => c.status === 'good').length;
+
+      document.getElementById('statRate').textContent = `${stats.measuredHz.toFixed(1)} SPS`;
+      document.getElementById('statPackets').textContent =
+        `${stats.samplesReceived} / ${stats.packetsLost} (${(stats.packetLossRate * 100).toFixed(1)}%)`;
+
+      const contactEl = document.getElementById('statContact');
+      contactEl.textContent = `${goodPins} / ${stats.numChannels} Good`;
+      contactEl.style.color = goodPins >= 14 ? 'var(--green)' : goodPins >= 10 ? 'var(--amber)' : 'var(--red)';
+
+      document.getElementById('statAlpha').textContent =
+        `${(spectrum?.dominantFreq || 0).toFixed(1)} Hz · α ${powers.Alpha.toFixed(1)} µV²`;
+      document.getElementById('statRatios').textContent =
+        artifactGated ? 'GATED (EMG/Motion)' : `Relax ${relaxIdx.toFixed(2)} · β/(β+θ) ${focusIdx.toFixed(2)}`;
+    });
+
+    eeg.onDisconnect(() => {
+      document.getElementById('statStatus').textContent = 'Disconnected';
+      document.getElementById('statStatus').style.color = 'var(--red)';
+      btnDisconnect.style.display = 'none';
+      simBar.classList.remove('visible');
+      logEvent('Device disconnected.');
+    });
+
+    eeg.onError((err) => {
+      logEvent(`Error: ${err?.message || err}`);
+    });
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 4. Toolbar & Simulator Controls
+    // ═════════════════════════════════════════════════════════════════════════
+    btnConnectBle.addEventListener('click', async () => {
+      try {
+        const info = await eeg.connectBLE({ device: 'octopus-16' });
+        document.getElementById('statStatus').textContent = `BLE: ${info.deviceName}`;
+        document.getElementById('statStatus').style.color = 'var(--accent)';
+        btnDisconnect.style.display = 'inline-block';
+        simBar.classList.remove('visible');
+        logEvent(`Connected to ${info.deviceName} (${info.channels} ch @ ${info.sampleRate} Hz)`);
+      } catch (err) {
+        logEvent(`BLE Connection cancelled or failed: ${err.message}`);
+      }
+    });
+
+    async function startSimulator() {
+      const info = await eeg.connectSimulator({ device: 'octopus-16' });
+      document.getElementById('statStatus').textContent = info.deviceName;
+      document.getElementById('statStatus').style.color = 'var(--green)';
+      btnDisconnect.style.display = 'inline-block';
+      simBar.classList.add('visible');
+      logEvent(`Started 250 Hz Octopus 16 Simulator. Press [A] for Alpha, [Space] for Blink, [C] for Clench.`);
+    }
+
+    btnConnectSim.addEventListener('click', startSimulator);
+
+    btnDisconnect.addEventListener('click', () => {
+      eeg.disconnect();
+      document.getElementById('statStatus').textContent = 'Disconnected';
+      document.getElementById('statStatus').style.color = 'var(--muted)';
+      btnDisconnect.style.display = 'none';
+      simBar.classList.remove('visible');
+    });
+
+    btnLaplacian.addEventListener('click', () => {
+      useLaplacian = !useLaplacian;
+      btnLaplacian.textContent = `Laplacian: ${useLaplacian ? 'ON' : 'OFF'}`;
+      btnLaplacian.classList.toggle('active-pill', useLaplacian);
+      logEvent(`Hexagonal Surface Laplacian spatial filter ${useLaplacian ? 'ENABLED' : 'DISABLED'}.`);
+    });
+
+    selNotch.addEventListener('change', () => {
+      const freq = Number(selNotch.value);
+      if (freq > 0) {
+        eeg.setNotch(true, freq, 30);
+        logEvent(`IIR Notch filter set to ${freq} Hz.`);
+      } else {
+        eeg.setNotch(false);
+        logEvent(`IIR Notch filter disabled.`);
+      }
+    });
+
+    selScale.addEventListener('change', () => {
+      verticalScaleUv = Number(selScale.value);
+    });
+
+    btnRecordCsv.addEventListener('click', () => {
+      if (!isRecordingCsv) {
+        csvRows = ['timestamp_s,' + Array.from({ length: 16 }, (_, i) => `CH${i + 1}_uV`).join(',')];
+        isRecordingCsv = true;
+        btnRecordCsv.textContent = 'Stop & Save CSV';
+        btnRecordCsv.classList.add('danger');
+        logEvent('Started recording 16-channel µV stream to CSV buffer...');
+      } else {
+        isRecordingCsv = false;
+        btnRecordCsv.textContent = 'Record CSV';
+        btnRecordCsv.classList.remove('danger');
+        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `octopus16_${new Date().toISOString().replace(/[:.]/g, '-')}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        logEvent(`Saved ${csvRows.length - 1} samples to CSV file.`);
+      }
+    });
+
+    // Simulator buttons & hotkeys
+    function toggleAlphaSim() {
+      const active = eeg.triggerSimEvent('alpha');
+      btnSimAlpha.textContent = `Eyes Closed Alpha 10 Hz (A): ${active ? 'ON' : 'OFF'}`;
+      btnSimAlpha.classList.toggle('active-pill', active);
+      logEvent(`Simulator: Eyes-Closed 10 Hz Alpha rhythm ${active ? 'BOOSTED' : 'NORMAL'}.`);
+    }
+    btnSimAlpha.addEventListener('click', toggleAlphaSim);
+    btnSimBlink.addEventListener('click', () => eeg.triggerSimEvent('blink'));
+    btnSimClench.addEventListener('click', () => eeg.triggerSimEvent('clench'));
+    btnSimPin.addEventListener('click', () => {
+      const pin = eeg.triggerSimEvent('noisy_pin');
+      btnSimPin.classList.toggle('active-pill', pin >= 0);
+      logEvent(pin >= 0 ? `Simulator: Pin #${pin + 1} set to poor contact (50 Hz noise).` : 'Simulator: All 16 pins restored to clean contact.');
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (eeg.deviceType !== 'simulator') return;
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      if (e.code === 'KeyA') toggleAlphaSim();
+      else if (e.code === 'Space') { e.preventDefault(); eeg.triggerSimEvent('blink'); }
+      else if (e.code === 'KeyC') eeg.triggerSimEvent('clench');
+      else if (e.code === 'KeyP') btnSimPin.click();
+    });
+
+    document.getElementById('btnHexModeContact').addEventListener('click', (e) => {
+      hexMode = 'contact';
+      e.target.classList.add('active-pill');
+      document.getElementById('btnHexModeAlpha').classList.remove('active-pill');
+    });
+    document.getElementById('btnHexModeAlpha').addEventListener('click', (e) => {
+      hexMode = 'alpha';
+      e.target.classList.add('active-pill');
+      document.getElementById('btnHexModeContact').classList.remove('active-pill');
+    });
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 5. High-Performance 60fps Canvas Render Loop
+    // ═════════════════════════════════════════════════════════════════════════
+    const scopeCanvas = document.getElementById('scopeCanvas');
+    const hexCanvas = document.getElementById('hexCanvas');
+    const fftCanvas = document.getElementById('fftCanvas');
+    const bciCanvas = document.getElementById('bciCanvas');
+
+    function fitCanvas(canvas) {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.round(rect.width * dpr);
+      const h = Math.round(rect.height * dpr);
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, w: rect.width, h: rect.height };
+    }
+
+    function drawScope() {
+      const { ctx, w, h } = fitCanvas(scopeCanvas);
+      ctx.clearRect(0, 0, w, h);
+
+      const numCh = 16;
+      const rowH = h / numCh;
+      const leftPad = 48;
+      const plotW = w - leftPad - 10;
+
+      // Copy ring buffers into pre-allocated scratch arrays
+      let available = 0;
+      if (eeg.connected && eeg.channelBuffers.length >= 16) {
+        available = Math.min(SCOPE_SAMPLES, eeg.channelBuffers[0].count);
+        for (let ch = 0; ch < 16; ch++) {
+          eeg.channelBuffers[ch].copyLatestTo(scopeScratch[ch], available);
+        }
+      }
+
+      for (let ch = 0; ch < numCh; ch++) {
+        const cy = (ch + 0.5) * rowH;
+
+        // Subtle horizontal baseline
+        ctx.strokeStyle = '#111a2e';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(leftPad, cy);
+        ctx.lineTo(w - 8, cy);
+        ctx.stroke();
+
+        // Channel label + contact dot
+        const contact = latestContact[ch]?.status || 'good';
+        ctx.fillStyle = contact === 'good' ? '#22c55e' : contact === 'railed' ? '#ef4444' : '#64748b';
+        ctx.beginPath();
+        ctx.arc(10, cy, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = ch < 8 ? '#38bdf8' : '#a78bfa';
+        ctx.font = '600 11px ui-monospace, monospace';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`CH${String(ch + 1).padStart(2, '0')}`, 18, cy);
+
+        if (available < 2) continue;
+
+        ctx.strokeStyle = ch < 8 ? '#38bdf8' : '#a78bfa';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+
+        const nbrs = PiEEG.OCTOPUS_16_NEIGHBORS[ch];
+        const scale = (rowH * 0.45) / verticalScaleUv;
+
+        for (let i = 0; i < available; i++) {
+          let val = scopeScratch[ch][i];
+          if (useLaplacian && nbrs.length > 0) {
+            let sum = 0;
+            for (let k = 0; k < nbrs.length; k++) sum += scopeScratch[nbrs[k]][i];
+            val -= sum / nbrs.length;
+          }
+          const x = leftPad + (i / (SCOPE_SAMPLES - 1)) * plotW;
+          const y = cy - Math.max(-rowH * 0.48, Math.min(rowH * 0.48, val * scale));
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+    }
+
+    function drawHexArray() {
+      const { ctx, w, h } = fitCanvas(hexCanvas);
+      ctx.clearRect(0, 0, w, h);
+
+      const cx = w * 0.44;
+      const cy = h * 0.5;
+      const boardRadiusPx = Math.min(w, h) * 0.42;
+      const mmToPx = boardRadiusPx / 13.0; // 26 mm diameter -> 13 mm radius
+
+      // Outer 26 mm PCB silhouette
+      ctx.strokeStyle = '#334155';
+      ctx.fillStyle = '#09101d';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, boardRadiusPx, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Orientation nose marker (Anterior / Top)
+      ctx.fillStyle = '#64748b';
+      ctx.font = '600 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('ANTERIOR (+Y)', cx, cy - boardRadiusPx - 6);
+
+      const chBandPowers = eeg.getChannelBandPowers();
+
+      // Draw 16 signal pogo pins at exact (x, y) mm coordinates
+      for (let i = 0; i < PiEEG.OCTOPUS_16_PINS.length; i++) {
+        const pin = PiEEG.OCTOPUS_16_PINS[i];
+        const px = cx + pin.x * mmToPx;
+        const py = cy - pin.y * mmToPx; // +y is up
+        const pinR = Math.max(12, mmToPx * 1.95);
+
+        let fill = '#1e293b';
+        let subText = '';
+
+        if (eeg.connected) {
+          if (hexMode === 'contact') {
+            const c = latestContact[i];
+            const rms = c ? c.rms : 0;
+            subText = `${rms.toFixed(0)}µV`;
+            if (!c || c.status === 'flat') fill = '#475569';
+            else if (c.status === 'good') fill = '#15803d';
+            else fill = '#b91c1c';
+          } else {
+            const alpha = chBandPowers && chBandPowers[i] ? chBandPowers[i].Alpha : 0;
+            const norm = Math.min(1, alpha / 45);
+            const r = Math.round(20 + norm * 30);
+            const g = Math.round(60 + norm * 185);
+            const b = Math.round(120 + (1 - norm) * 100);
+            fill = `rgb(${r},${g},${b})`;
+            subText = `${alpha.toFixed(0)}`;
+          }
+        }
+
+        ctx.fillStyle = fill;
+        ctx.strokeStyle = pin.adc === 1 ? '#38bdf8' : '#a78bfa';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.arc(px, py, pinR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 10px ui-monospace, monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`${pin.ch}`, px, py - (subText ? 3 : 0));
+
+        if (subText) {
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = '500 8px ui-monospace, monospace';
+          ctx.fillText(subText, px, py + 6);
+        }
+      }
+
+      // Draw central REF & GND pogo pins
+      const refPins = [
+        { label: 'REF', x: -2.6, y: 0 },
+        { label: 'GND', x:  2.6, y: 0 },
+      ];
+      for (const rp of refPins) {
+        const px = cx + rp.x * mmToPx;
+        const py = cy - rp.y * mmToPx;
+        ctx.fillStyle = '#0f172a';
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(px, py, Math.max(10, mmToPx * 1.6), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = '700 8px ui-monospace, monospace';
+        ctx.fillText(rp.label, px, py);
+      }
+
+      // Legend on the right
+      const lx = w * 0.78;
+      ctx.textAlign = 'left';
+      ctx.font = '600 11px sans-serif';
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillText('18 Dry Pogo Pins', lx, 28);
+      ctx.font = '11px sans-serif';
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillText('○ CH1–8 (ADC 1)', lx, 48);
+      ctx.fillStyle = '#a78bfa';
+      ctx.fillText('○ CH9–16 (ADC 2)', lx, 66);
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillText('○ AINREF + GND', lx, 84);
+
+      if (hexMode === 'contact') {
+        ctx.fillStyle = '#22c55e';
+        ctx.fillText('● Good (2–150 µV)', lx, 114);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillText('● Railed (>150 µV)', lx, 132);
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('● Flat (<2 µV)', lx, 150);
+      } else {
+        ctx.fillStyle = '#22c55e';
+        ctx.fillText('● High α (8–13 Hz)', lx, 114);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillText('● Baseline α', lx, 132);
+      }
+    }
+
+    function drawFft() {
+      const { ctx, w, h } = fitCanvas(fftCanvas);
+      ctx.clearRect(0, 0, w, h);
+
+      const specW = w * 0.62;
+      const barX = specW + 18;
+      const barW = w - barX - 12;
+      const padB = 22;
+      const padT = 12;
+      const plotH = h - padB - padT;
+
+      // 1. Draw PSD Spectrum Curve (0..50 Hz)
+      ctx.strokeStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.moveTo(32, padT);
+      ctx.lineTo(32, h - padB);
+      ctx.lineTo(specW, h - padB);
+      ctx.stroke();
+
+      // Highlight Alpha band (8–13 Hz)
+      const x8 = 32 + (8 / 50) * (specW - 32);
+      const x13 = 32 + (13 / 50) * (specW - 32);
+      ctx.fillStyle = 'rgba(34, 197, 94, 0.10)';
+      ctx.fillRect(x8, padT, x13 - x8, plotH);
+
+      if (latestSpectrum && latestSpectrum.psd && latestSpectrum.freqs) {
+        const psd = latestSpectrum.psd;
+        const freqs = latestSpectrum.freqs;
+        let maxPsd = 10;
+        for (let k = 1; k < psd.length; k++) {
+          if (freqs[k] <= 50 && psd[k] > maxPsd) maxPsd = psd[k];
+        }
+
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        let started = false;
+        for (let k = 1; k < psd.length; k++) {
+          const f = freqs[k];
+          if (f > 50) break;
+          const x = 32 + (f / 50) * (specW - 32);
+          const y = padT + plotH * (1 - Math.min(1, psd[k] / maxPsd));
+          if (!started) { ctx.moveTo(x, y); started = true; }
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+
+      // Frequency labels
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10px ui-monospace, monospace';
+      ctx.textAlign = 'center';
+      for (const f of [0, 10, 20, 30, 40, 50]) {
+        const x = 32 + (f / 50) * (specW - 32);
+        ctx.fillText(`${f}Hz`, x, h - 6);
+      }
+
+      // 2. Draw Band Power Bars on the right
+      const bands = PiEEG.FREQUENCY_BANDS;
+      const rowH = plotH / bands.length;
+      let maxBand = 15;
+      for (const b of bands) {
+        const v = latestPowers[b.name] || 0;
+        if (v > maxBand) maxBand = v;
+      }
+
+      for (let i = 0; i < bands.length; i++) {
+        const b = bands[i];
+        const val = latestPowers[b.name] || 0;
+        const y = padT + i * rowH + 4;
+        const bh = rowH - 8;
+
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '600 11px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(b.name, barX, y + bh * 0.65);
+
+        const trackX = barX + 46;
+        const trackW = Math.max(20, barW - 46);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(trackX, y, trackW, bh);
+
+        ctx.fillStyle = b.color;
+        ctx.fillRect(trackX, y, Math.min(1, val / maxBand) * trackW, bh);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '600 10px ui-monospace, monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${val.toFixed(1)}`, trackX + trackW - 4, y + bh * 0.68);
+      }
+    }
+
+    function drawBciSandbox() {
+      const { ctx, w, h } = fitCanvas(bciCanvas);
+      ctx.clearRect(0, 0, w, h);
+
+      const cx = w * 0.25;
+      const cy = h * 0.5;
+      const baseR = 20 + orbCharge * 34;
+
+      // Glowing Alpha Energy Orb
+      const grad = ctx.createRadialGradient(cx, cy, 4, cx, cy, baseR * 1.5);
+      grad.addColorStop(0, '#bbf7d0');
+      grad.addColorStop(0.5, '#22c55e');
+      grad.addColorStop(1, 'rgba(34, 197, 94, 0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, baseR * 1.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Expanding Blink Shockwave Ring
+      if (blinkPulseRadius > 0.02) {
+        const ringR = 24 + (1 - blinkPulseRadius) * 95;
+        ctx.strokeStyle = `rgba(56, 189, 248, ${blinkPulseRadius.toFixed(2)})`;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(cx, cy, ringR, 0, Math.PI * 2);
+        ctx.stroke();
+        blinkPulseRadius *= 0.91;
+      }
+
+      // Telemetry text inside sandbox
+      const tx = w * 0.52;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '700 13px sans-serif';
+      ctx.fillText(`Alpha Orb Charge: ${(orbCharge * 100).toFixed(0)}%`, tx, 36);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '12px sans-serif';
+      ctx.fillText(`Blink Triggers Fired: ${blinkCount}`, tx, 62);
+      ctx.fillStyle = artifactGated ? '#f59e0b' : '#22c55e';
+      ctx.fillText(
+        artifactGated ? 'Artifact Gate: PAUSED (Jaw/Motion detected)' : 'Artifact Gate: CLEAN EEG',
+        tx,
+        88
+      );
+      ctx.fillStyle = '#64748b';
+      ctx.font = '11px ui-monospace, monospace';
+      ctx.fillText('Use this loop as a template for games & neurofeedback!', tx, 114);
+    }
+
+    function renderLoop() {
+      drawScope();
+      drawHexArray();
+      drawFft();
+      drawBciSandbox();
+      requestAnimationFrame(renderLoop);
+    }
+
+    requestAnimationFrame(renderLoop);
+
+    // Auto-start simulator if URL has ?sim=1
+    if (new URLSearchParams(window.location.search).get('sim') === '1') {
+      startSimulator();
+    }
+  </script>
+</body>
+</html>

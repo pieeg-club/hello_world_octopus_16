@@ -1,0 +1,23 @@
+{
+  "name": "hello-world-octopus-16",
+  "version": "1.3.0",
+  "description": "60-Second University BCI Hackathon Boilerplate for Octopus 16 (pieeg.js + 60fps Canvas Workbench + AI Agent Context + Python Quickstart)",
+  "main": "pieeg.js",
+  "scripts": {
+    "dev": "npx --yes serve -l 3000 .",
+    "start": "npx --yes serve -l 3000 .",
+    "py:sim": "python python_quickstart.py --sim",
+    "py:ble": "python python_quickstart.py"
+  },
+  "keywords": [
+    "bci",
+    "eeg",
+    "pieeg",
+    "octopus-16",
+    "neurotech",
+    "web-bluetooth",
+    "hackathon"
+  ],
+  "author": "PiEEG (https://pieeg.com)",
+  "license": "MIT"
+}

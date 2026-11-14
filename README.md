@@ -2,13 +2,27 @@
 
 **16 channels of 24-bit wireless EEG in a 26 mm coin-sized sensor. Zero gel, zero ear clips, zero backend required.**
 
-Built for university hackathons: **clone → stream live 16-ch EEG (or run the 250 Hz simulator) → paste a prompt into Copilot / Claude Code / Cursor → ship a working BCI app in under 60 seconds.**
+Built for university hackathons — everything is hands-on and educational, starting with flashing the board's firmware right from your browser: **flash firmware → clone → stream live 16-ch EEG (or run the 250 Hz simulator) → paste a prompt into Copilot / Claude Code / Cursor → ship a working BCI app in under 60 seconds.**
 
-> **Quick Jump:** [1. Clone & Run (30s)](#-step-1-clone--run-in-30-seconds) · [2. Pick an AI Prompt & Build](#-step-2-build-your-hackathon-app-with-ai-click-a-prompt) · [3. Place Sensor on Head](#-step-3-wearing-octopus-16-hardware-cheat-sheet) · [Python Track](#-python--ml-track-bleak--numpy--csv--lsl) · [Minimal SDK Code](#-minimal-pieegjs-snippet)
+> **Quick Jump:** [1. Flash Firmware (Web Tool)](#-step-1-flash-octopus-16-firmware-web-flasher) · [2. Clone & Run (30s)](#-step-2-clone--run-in-30-seconds) · [3. Pick an AI Prompt & Build](#-step-3-build-your-hackathon-app-with-ai-click-a-prompt) · [4. Place Sensor on Head](#-step-4-wearing-octopus-16-hardware-cheat-sheet) · [Python Track](#-python--ml-track-bleak--numpy--csv--lsl) · [Minimal SDK Code](#-minimal-pieegjs-snippet)
 
 ---
 
-## ⚡ Step 1: Clone & Run in 30 Seconds
+## 🔥 Step 1: Flash Octopus 16 Firmware (Web Flasher)
+
+For hackathons, the entire stack is educational — including installing the firmware onto your **Octopus 16** (Seeed XIAO ESP32-S3) before streaming! Zero IDE or toolchain setup required:
+
+1. Plug your **Octopus 16** into your computer via USB-C.
+2. Open the **OctoBridge Web Flasher** in **Chrome** or **Edge**:
+   👉 **[https://octobridge.pieeg.com/flash](https://octobridge.pieeg.com/flash)**
+3. Click **Flash**, select the USB serial port, and wait a few seconds for the firmware install to complete.
+4. *(Unplug from your laptop and switch to a **5 V battery power bank** before wearing the sensor on your head!)*
+
+> 💻 **Don't have the hardware in hand yet?** Skip straight to [Step 2](#-step-2-clone--run-in-30-seconds) and use the built-in **250 Hz Simulator**.
+
+---
+
+## ⚡ Step 2: Clone & Run in 30 Seconds
 
 ```bash
 # 1. Clone the starter repo
@@ -26,7 +40,7 @@ npm start
 
 ---
 
-## 🤖 Step 2: Build Your Hackathon App with AI (Click a Prompt!)
+## 🤖 Step 3: Build Your Hackathon App with AI (Click a Prompt!)
 
 This repo is pre-wired for **GitHub Copilot, Claude Code, Cursor, and Windsurf** via [`AGENTS.md`](./AGENTS.md), [`CLAUDE.md`](./CLAUDE.md), and [`.cursorrules`](./.cursorrules) — your AI agent already knows the exact BLE UUIDs, 51-byte packet layout, 16-pin hex geometry, and 60fps zero-lag rules.
 
@@ -59,7 +73,7 @@ python python_quickstart.py --csv trial.csv  # 3. Record 16-ch µV stream to CSV
 
 ---
 
-## 🧠 Step 3: Wearing Octopus 16 (Hardware Cheat Sheet)
+## 🧠 Step 4: Wearing Octopus 16 (Hardware Cheat Sheet)
 
 ### Where to Place It on the Head
 1. **Top-Back (`Pz`) — Best for Alpha Relaxation (`8–13 Hz`):** Part the hair, press the 18 spring-loaded pogo pins straight down (`90°`), hold snug with a headband, and close your eyes. Watch Alpha power surge.

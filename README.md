@@ -6,6 +6,8 @@ Built for university hackathons — everything is hands-on and educational, star
 
 > **Quick Jump:** [1. Flash & Verify (Web Tool)](#-step-1-flash--verify-octopus-16-web-flasher--cloud) · [2. Clone & Run (30s)](#-step-2-clone--run-in-30-seconds) · [3. Pick an AI Prompt & Build](#-step-3-build-your-hackathon-app-with-ai-click-a-prompt) · [4. Place Sensor on Head](#-step-4-wearing-octopus-16-hardware-cheat-sheet) · [Python Track](#-python--ml-track-bleak--numpy--csv--lsl) · [Minimal SDK Code](#-minimal-pieegjs-snippet)
 
+<img width="1192" height="646" alt="image" src="https://github.com/user-attachments/assets/7c648080-07fd-481e-8494-5cbe5e0db845" />
+
 ---
 
 ## 🔥 Step 1: Flash & Verify Octopus 16 (Web Flasher + Cloud)

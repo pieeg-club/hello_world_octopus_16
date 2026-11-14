@@ -105,7 +105,8 @@ python python_quickstart.py --csv trial.csv  # 3. Record 16-ch µV stream to CSV
 
 | File | Purpose |
 |---|---|
-| [`index.html`](./index.html) | **60fps 16-Channel Workbench** — Live waveforms, FFT spectrum, 18-pin hex contact map, Laplacian toggle & CSV recorder |
+| [`index.html`](./index.html) | **60fps 16-Channel Workbench** — Live waveforms, FFT spectrum, 18-pin hex contact map, hacker event terminal & CSV recorder |
+| [`styles.css`](./styles.css) | **External Workbench Stylesheet** — Keeps `index.html` lean and clean for student AI vibe-coding context windows |
 | [`pieeg.js`](./pieeg.js) | **Zero-dependency Browser SDK** — Web Bluetooth, 250 Hz simulator, Hampel + Butterworth + Notch DSP, FFT & Surface Laplacian |
 | [`PROMPTS.md`](./PROMPTS.md) | **Copy-Paste AI Prompt Playbook** — 5 complete prompts from 0 to full BCI app |
 | [`AGENTS.md`](./AGENTS.md) | **AI Agent Ground Truth** — Hardware specs, BLE wire protocol & 60fps rules (also linked via [`CLAUDE.md`](./CLAUDE.md) & [`.cursorrules`](./.cursorrules)) |

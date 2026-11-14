@@ -4,354 +4,148 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Hello Octopus 16 — 60s BCI Hackathon Workbench (pieeg.js)</title>
+  <link rel="stylesheet" href="./styles.css" />
   <script src="./pieeg.js"></script>
-  <style>
-    :root {
-      --bg: #070b14;
-      --panel: #0f1626;
-      --panel-border: #1e293b;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --green: #22c55e;
-      --amber: #f59e0b;
-      --red: #ef4444;
-      --purple: #8b5cf6;
-      --cyan: #06b6d4;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 12px 16px;
-    }
-    header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      background: var(--panel);
-      border: 1px solid var(--panel-border);
-      border-radius: 12px;
-      padding: 12px 16px;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .brand-badge {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: radial-gradient(circle at 30% 30%, #38bdf8, #6366f1);
-      display: grid;
-      place-items: center;
-      font-weight: 800;
-      font-size: 15px;
-      color: #fff;
-      box-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
-    }
-    .brand h1 {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-    .brand p {
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-    }
-    button, select {
-      background: #1e293b;
-      color: var(--text);
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 8px 13px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    button:hover { background: #334155; border-color: #475569; }
-    button.primary {
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      border-color: #38bdf8;
-      color: #fff;
-    }
-    button.primary:hover { filter: brightness(1.1); }
-    button.sim {
-      background: linear-gradient(135deg, #059669, #10b981);
-      border-color: #34d399;
-      color: #fff;
-    }
-    button.danger {
-      background: #7f1d1d;
-      border-color: #ef4444;
-      color: #fecaca;
-    }
-    button.active-pill {
-      background: rgba(56, 189, 248, 0.18);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .telemetry-bar {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 8px;
-    }
-    .stat-card {
-      background: var(--panel);
-      border: 1px solid var(--panel-border);
-      border-radius: 10px;
-      padding: 9px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .stat-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-    }
-    .stat-value {
-      font-size: 16px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-    }
-    .sim-controls {
-      display: none;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      background: rgba(16, 185, 129, 0.08);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      border-radius: 10px;
-      padding: 8px 14px;
-      font-size: 12px;
-    }
-    .sim-controls.visible { display: flex; }
-    .sim-controls span.tag {
-      color: #34d399;
-      font-weight: 700;
-      margin-right: 4px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1.55fr 1fr;
-      gap: 12px;
-      flex: 1;
-    }
-    @media (max-width: 1100px) {
-      .grid { grid-template-columns: 1fr; }
-    }
-    .col {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--panel-border);
-      border-radius: 12px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .panel-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #f8fafc;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .panel-sub {
-      font-size: 11px;
-      color: var(--muted);
-    }
-    canvas {
-      width: 100%;
-      background: #050811;
-      border: 1px solid #151f32;
-      border-radius: 8px;
-      display: block;
-    }
-    #scopeCanvas { height: 420px; }
-    #hexCanvas { height: 250px; }
-    #fftCanvas { height: 195px; }
-    #bciCanvas { height: 145px; }
-    .event-log {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 11px;
-      color: #cbd5e1;
-      background: #050811;
-      border: 1px solid #151f32;
-      border-radius: 6px;
-      padding: 6px 10px;
-      height: 56px;
-      overflow-y: auto;
-    }
-    .footer-note {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
-      font-size: 11px;
-      color: var(--muted);
-      padding: 2px 4px;
-    }
-    kbd {
-      background: #1e293b;
-      border: 1px solid #475569;
-      border-radius: 4px;
-      padding: 1px 5px;
-      font-size: 11px;
-      font-family: monospace;
-    }
-  </style>
 </head>
 <body>
+  <div class="app-shell">
 
-  <header>
-    <div class="brand">
-      <div class="brand-badge">O16</div>
-      <div>
-        <h1>Hello Octopus 16 — BCI Hackathon Workbench</h1>
-        <p>16 Dry Pogo Pins · 2 × ADS131M08 (24-bit @ 250 Hz) · XIAO ESP32-S3 BLE · Powered by <code>pieeg.js</code></p>
-      </div>
-    </div>
-
-    <div class="toolbar">
-      <button id="btnConnectBle" class="primary">Connect Octopus 16 (BLE)</button>
-      <button id="btnConnectSim" class="sim">Start 250 Hz Simulator</button>
-      <button id="btnDisconnect" class="danger" style="display:none;">Disconnect</button>
-      <button id="btnLaplacian" title="Hexagonal Surface Laplacian (Current Source Density)">Laplacian: OFF</button>
-      <select id="selNotch" title="Mains Interference IIR Notch Filter">
-        <option value="50">Notch: 50 Hz (EU)</option>
-        <option value="60">Notch: 60 Hz (US)</option>
-        <option value="0">Notch: OFF</option>
-      </select>
-      <select id="selScale" title="Oscilloscope Vertical Scale">
-        <option value="50">Scale: ±50 µV</option>
-        <option value="100" selected>Scale: ±100 µV</option>
-        <option value="250">Scale: ±250 µV</option>
-      </select>
-      <button id="btnRecordCsv">Record CSV</button>
-    </div>
-  </header>
-
-  <div id="simBar" class="sim-controls">
-    <span class="tag">SIMULATOR CONTROLS:</span>
-    <button id="btnSimAlpha">Eyes Closed Alpha 10 Hz (<kbd>A</kbd>): OFF</button>
-    <button id="btnSimBlink">Inject Eye Blink (<kbd>Space</kbd>)</button>
-    <button id="btnSimClench">Inject Jaw Clench EMG (<kbd>C</kbd>)</button>
-    <button id="btnSimPin">Toggle Noisy Pin #4 (<kbd>P</kbd>)</button>
-    <span style="color:var(--muted);margin-left:auto;">Use this mode so all 4 hackathon teammates can code simultaneously!</span>
-  </div>
-
-  <div class="telemetry-bar">
-    <div class="stat-card">
-      <span class="stat-label">Connection Status</span>
-      <span class="stat-value" id="statStatus" style="color:var(--muted)">Idle (Click BLE or Sim)</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Sample Rate (Measured)</span>
-      <span class="stat-value" id="statRate">0.0 SPS</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Samples / Dropped</span>
-      <span class="stat-value" id="statPackets">0 / 0 (0.0%)</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Pogo Contact (2–150 µV)</span>
-      <span class="stat-value" id="statContact">-- / 16 Good</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Dominant Peak / α Power</span>
-      <span class="stat-value" id="statAlpha">-- Hz · 0.0 µV²</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">α/(α+β) Relax · β/(β+θ) Ratio</span>
-      <span class="stat-value" id="statRatios">0.50 · 0.50</span>
-    </div>
-  </div>
-
-  <div class="grid">
-    <!-- Left Column: 16-Channel 60fps Oscilloscope + BCI Interactive Sandbox -->
-    <div class="col">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span>16-Channel Real-Time Oscilloscope (60 fps Canvas, Zero-GC Ring Buffer)</span>
-          </div>
-          <span class="panel-sub">CH1–CH8: ADC1 · CH9–CH16: ADC2 · Hampel + 1–40 Hz Butterworth Bandpass</span>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">O16</div>
+        <div class="brand-title">
+          <h1>Hello Octopus 16 — BCI Hackathon Workbench</h1>
+          <span class="brand-meta">16 Dry Pogo Pins · 2 × ADS131M08 (24-bit @ 250 Hz) · XIAO ESP32-S3 BLE · <code>pieeg.js</code></span>
         </div>
-        <canvas id="scopeCanvas"></canvas>
       </div>
 
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span>Live BCI Neuro-Controller Sandbox (Alpha Charge Orb + Blink Trigger + Artifact Gate)</span>
-          </div>
-          <span class="panel-sub">Close eyes (or press <kbd>A</kbd>) to charge Alpha Orb · Blink (<kbd>Space</kbd>) to pulse</span>
+      <div class="toolbar">
+        <button id="btnConnectBle" class="primary">Connect Octopus 16 (BLE)</button>
+        <button id="btnConnectSim" class="sim">Start 250 Hz Simulator</button>
+        <button id="btnDisconnect" class="danger" style="display:none;">Disconnect</button>
+        <div class="toolbar-divider"></div>
+        <button id="btnLaplacian" title="Hexagonal Surface Laplacian (Current Source Density)">Laplacian: OFF</button>
+        <select id="selNotch" title="Mains Interference IIR Notch Filter">
+          <option value="50">Notch: 50 Hz (EU)</option>
+          <option value="60">Notch: 60 Hz (US)</option>
+          <option value="0">Notch: OFF</option>
+        </select>
+        <select id="selScale" title="Oscilloscope Vertical Scale">
+          <option value="50">Scale: ±50 µV</option>
+          <option value="100" selected>Scale: ±100 µV</option>
+          <option value="250">Scale: ±250 µV</option>
+        </select>
+        <button id="btnRecordCsv">Record CSV</button>
+      </div>
+    </header>
+
+    <div class="hud-strip">
+      <div id="simBar" class="sim-controls">
+        <span class="tag">SIMULATOR:</span>
+        <button id="btnSimAlpha" class="ghost-sm">Eyes Closed Alpha 10 Hz (<kbd>A</kbd>): OFF</button>
+        <button id="btnSimBlink" class="ghost-sm">Inject Eye Blink (<kbd>Space</kbd>)</button>
+        <button id="btnSimClench" class="ghost-sm">Inject Jaw Clench EMG (<kbd>C</kbd>)</button>
+        <button id="btnSimPin" class="ghost-sm">Toggle Noisy Pin #4 (<kbd>P</kbd>)</button>
+        <span class="sim-hint">4 teammates can code simultaneously without hardware</span>
+      </div>
+
+      <div class="telemetry-bar">
+        <div class="stat-card">
+          <span class="stat-label">Link</span>
+          <span class="stat-value" id="statStatus" style="color:var(--muted)">Idle (BLE / Sim)</span>
         </div>
-        <canvas id="bciCanvas"></canvas>
-        <div class="event-log" id="eventLog">[Ready] Connect Octopus 16 via BLE or click "Start 250 Hz Simulator" to begin streaming.</div>
+        <div class="stat-card">
+          <span class="stat-label">Sample Rate</span>
+          <span class="stat-value" id="statRate">0.0 SPS</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">RX / Dropped</span>
+          <span class="stat-value" id="statPackets">0 / 0 (0.0%)</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Pogo Contact</span>
+          <span class="stat-value" id="statContact">-- / 16 Good</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Peak / α Power</span>
+          <span class="stat-value" id="statAlpha">-- Hz · 0.0 µV²</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Indices</span>
+          <span class="stat-value" id="statRatios">Relax 0.50 · β 0.50</span>
+        </div>
       </div>
     </div>
 
-    <!-- Right Column: 18-Pin Hexagonal Pogo Array + FFT Spectrum & Band Powers -->
-    <div class="col">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span>26 mm Hexagonal 18-Pin Pogo Array (True Physical mm Geometry)</span>
+    <div class="workbench-grid">
+      <!-- Left Column: 16-Channel 60fps Oscilloscope + Split BCI Sandbox & Hacker Terminal -->
+      <div class="col">
+        <div class="panel panel-scope">
+          <div class="panel-header">
+            <div class="panel-title">16-Channel Real-Time Oscilloscope (60 fps)</div>
+            <span class="panel-sub">CH01–08: ADC1 · CH09–16: ADC2 · Hampel + 1–40 Hz Butterworth</span>
           </div>
-          <div style="display:flex;gap:6px;">
-            <button id="btnHexModeContact" class="active-pill" style="padding:4px 8px;font-size:11px;">Contact RMS (µV)</button>
-            <button id="btnHexModeAlpha" style="padding:4px 8px;font-size:11px;">Alpha Heatmap</button>
+          <div class="canvas-wrap">
+            <canvas id="scopeCanvas"></canvas>
           </div>
         </div>
-        <canvas id="hexCanvas"></canvas>
+
+        <div class="panel-bottom-left">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">BCI Sandbox</div>
+              <span class="panel-sub"><kbd>A</kbd> Alpha · <kbd>Space</kbd> Blink</span>
+            </div>
+            <div class="canvas-wrap">
+              <canvas id="bciCanvas"></canvas>
+            </div>
+          </div>
+
+          <div class="panel terminal-panel">
+            <div class="panel-header">
+              <div class="panel-title">Telemetry &amp; Event Log</div>
+              <div class="terminal-controls">
+                <button id="btnPauseLog" class="ghost-sm">Pause</button>
+                <button id="btnClearLog" class="ghost-sm">Clear</button>
+              </div>
+            </div>
+            <div class="event-log" id="eventLog"></div>
+          </div>
+        </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span>FFT Power Spectral Density (0–50 Hz) & Band Powers</span>
+      <!-- Right Column: 18-Pin Hexagonal Pogo Array + FFT Spectrum & Band Powers -->
+      <div class="col">
+        <div class="panel panel-hex">
+          <div class="panel-header">
+            <div class="panel-title">26 mm Hexagonal 18-Pin Array</div>
+            <div style="display:flex;gap:4px;">
+              <button id="btnHexModeContact" class="ghost-sm active-pill">Contact RMS (µV)</button>
+              <button id="btnHexModeAlpha" class="ghost-sm">Alpha Heatmap</button>
+            </div>
           </div>
-          <span class="panel-sub">256-pt Hanning Cooley-Tukey FFT · Precomputed Twiddles</span>
+          <div class="canvas-wrap">
+            <canvas id="hexCanvas"></canvas>
+          </div>
         </div>
-        <canvas id="fftCanvas"></canvas>
+
+        <div class="panel panel-fft">
+          <div class="panel-header">
+            <div class="panel-title">FFT Spectrum (0–50 Hz) &amp; Band Powers</div>
+            <span class="panel-sub">256-pt Hanning Radix-2 FFT</span>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="fftCanvas"></canvas>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="footer-note">
-    <span>⚡ <strong>Safety:</strong> Always power Octopus 16 from a 5 V battery power bank while worn on the head.</span>
-    <span>🤖 <strong>AI-Ready Repo:</strong> Point Copilot, Claude Code, or Cursor to <code>AGENTS.md</code> and <code>PROMPTS.md</code> to build full BCI apps in 1 prompt.</span>
+    <footer class="footer-bar">
+      <span>⚡ <strong>Safety:</strong> Power Octopus 16 exclusively from a 5 V battery power bank while worn on the head.</span>
+      <span>🤖 <strong>Hackathon Tip:</strong> Styles live in <code>styles.css</code> so your AI context stays lean — point Copilot/Claude to <code>AGENTS.md</code> &amp; <code>PROMPTS.md</code>.</span>
+    </footer>
+
   </div>
 
   <script>
@@ -406,17 +200,63 @@
     const btnSimBlink = document.getElementById('btnSimBlink');
     const btnSimClench = document.getElementById('btnSimClench');
     const btnSimPin = document.getElementById('btnSimPin');
+    const btnPauseLog = document.getElementById('btnPauseLog');
+    const btnClearLog = document.getElementById('btnClearLog');
     const eventLog = document.getElementById('eventLog');
 
-    function logEvent(msg) {
-      const time = new Date().toLocaleTimeString();
-      const line = document.createElement('div');
-      line.textContent = `[${time}] ${msg}`;
-      eventLog.prepend(line);
-      while (eventLog.children.length > 25) {
+    // Structured Hacker Terminal Log (with duplicate coalescing + pause/clear)
+    let logPaused = false;
+    let lastLogKey = '';
+    let lastLogCountEl = null;
+    let lastLogRepeat = 1;
+
+    function logEvent(msg, tag = 'sys') {
+      if (logPaused) return;
+      const now = new Date();
+      const ts = now.toTimeString().slice(0, 8) + '.' + String(now.getMilliseconds()).padStart(3, '0');
+      const key = `${tag}:${msg}`;
+
+      if (key === lastLogKey && lastLogCountEl && eventLog.firstChild) {
+        lastLogRepeat++;
+        lastLogCountEl.textContent = `×${lastLogRepeat}`;
+        lastLogCountEl.style.display = 'inline-block';
+        eventLog.firstChild.querySelector('.log-ts').textContent = ts;
+        return;
+      }
+
+      lastLogKey = key;
+      lastLogRepeat = 1;
+
+      const row = document.createElement('div');
+      row.className = 'log-row';
+      row.innerHTML =
+        `<span class="log-ts">${ts}</span>` +
+        `<span class="log-tag ${tag}">${tag}</span>` +
+        `<span class="log-msg"></span>` +
+        `<span class="log-count" style="display:none"></span>`;
+      row.querySelector('.log-msg').textContent = msg;
+      lastLogCountEl = row.querySelector('.log-count');
+
+      eventLog.prepend(row);
+      while (eventLog.children.length > 80) {
         eventLog.removeChild(eventLog.lastChild);
       }
     }
+
+    btnPauseLog.addEventListener('click', () => {
+      logPaused = !logPaused;
+      btnPauseLog.textContent = logPaused ? 'Resume' : 'Pause';
+      btnPauseLog.classList.toggle('active-pill', logPaused);
+    });
+
+    btnClearLog.addEventListener('click', () => {
+      eventLog.innerHTML = '';
+      lastLogKey = '';
+      lastLogCountEl = null;
+      logEvent('Terminal cleared.', 'sys');
+    });
+
+    logEvent('Workbench ready. Click "Connect Octopus 16 (BLE)" or "Start 250 Hz Simulator".', 'sys');
 
     // ═════════════════════════════════════════════════════════════════════════
     // 2. High-Rate Sample Callback (250 Hz) — Keep Ultra-Lightweight!
@@ -439,7 +279,7 @@
         lastBlinkMs = nowMs;
         blinkCount++;
         blinkPulseRadius = 1.0;
-        logEvent(`👀 Blink / Transient Detected! Peak=${maxAbs.toFixed(0)} µV (Total: ${blinkCount})`);
+        logEvent(`Blink / transient spike: peak=${maxAbs.toFixed(0)} µV (total=${blinkCount})`, 'bci');
       }
     });
 
@@ -457,7 +297,7 @@
 
       if (artifactGated && performance.now() - lastClenchMs > 1000) {
         lastClenchMs = performance.now();
-        logEvent(`⚡ Muscle / Motion Artifact Gate Active (Mean RMS=${meanRms.toFixed(1)} µV)`);
+        logEvent(`EMG / motion gate active: meanRMS=${meanRms.toFixed(1)} µV, γ=${powers.Gamma.toFixed(0)} µV²`, 'warn');
       }
 
       const relaxIdx = eeg.getRelaxationIndex();
@@ -484,7 +324,7 @@
       document.getElementById('statAlpha').textContent =
         `${(spectrum?.dominantFreq || 0).toFixed(1)} Hz · α ${powers.Alpha.toFixed(1)} µV²`;
       document.getElementById('statRatios').textContent =
-        artifactGated ? 'GATED (EMG/Motion)' : `Relax ${relaxIdx.toFixed(2)} · β/(β+θ) ${focusIdx.toFixed(2)}`;
+        artifactGated ? 'GATED (EMG)' : `Relax ${relaxIdx.toFixed(2)} · β ${focusIdx.toFixed(2)}`;
     });
 
     eeg.onDisconnect(() => {
@@ -492,11 +332,11 @@
       document.getElementById('statStatus').style.color = 'var(--red)';
       btnDisconnect.style.display = 'none';
       simBar.classList.remove('visible');
-      logEvent('Device disconnected.');
+      logEvent('Device disconnected.', 'warn');
     });
 
     eeg.onError((err) => {
-      logEvent(`Error: ${err?.message || err}`);
+      logEvent(`${err?.message || err}`, 'err');
     });
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -509,19 +349,19 @@
         document.getElementById('statStatus').style.color = 'var(--accent)';
         btnDisconnect.style.display = 'inline-block';
         simBar.classList.remove('visible');
-        logEvent(`Connected to ${info.deviceName} (${info.channels} ch @ ${info.sampleRate} Hz)`);
+        logEvent(`BLE connected: ${info.deviceName} (${info.channels}ch @ ${info.sampleRate} Hz)`, 'sys');
       } catch (err) {
-        logEvent(`BLE Connection cancelled or failed: ${err.message}`);
+        logEvent(`BLE connection cancelled/failed: ${err.message}`, 'err');
       }
     });
 
     async function startSimulator() {
       const info = await eeg.connectSimulator({ device: 'octopus-16' });
-      document.getElementById('statStatus').textContent = info.deviceName;
+      document.getElementById('statStatus').textContent = 'SIM: Octopus-16 (250 Hz)';
       document.getElementById('statStatus').style.color = 'var(--green)';
       btnDisconnect.style.display = 'inline-block';
       simBar.classList.add('visible');
-      logEvent(`Started 250 Hz Octopus 16 Simulator. Press [A] for Alpha, [Space] for Blink, [C] for Clench.`);
+      logEvent(`250 Hz Simulator active. Hotkeys: [A] Alpha, [Space] Blink, [C] Clench, [P] Noisy Pin`, 'sys');
     }
 
     btnConnectSim.addEventListener('click', startSimulator);
@@ -538,22 +378,23 @@
       useLaplacian = !useLaplacian;
       btnLaplacian.textContent = `Laplacian: ${useLaplacian ? 'ON' : 'OFF'}`;
       btnLaplacian.classList.toggle('active-pill', useLaplacian);
-      logEvent(`Hexagonal Surface Laplacian spatial filter ${useLaplacian ? 'ENABLED' : 'DISABLED'}.`);
+      logEvent(`Hexagonal Surface Laplacian (CSD) ${useLaplacian ? 'ENABLED' : 'DISABLED'}`, 'dsp');
     });
 
     selNotch.addEventListener('change', () => {
       const freq = Number(selNotch.value);
       if (freq > 0) {
         eeg.setNotch(true, freq, 30);
-        logEvent(`IIR Notch filter set to ${freq} Hz.`);
+        logEvent(`IIR Notch filter set to ${freq} Hz (Q=30)`, 'dsp');
       } else {
         eeg.setNotch(false);
-        logEvent(`IIR Notch filter disabled.`);
+        logEvent(`IIR Notch filter disabled`, 'dsp');
       }
     });
 
     selScale.addEventListener('change', () => {
       verticalScaleUv = Number(selScale.value);
+      logEvent(`Oscilloscope scale set to ±${verticalScaleUv} µV`, 'dsp');
     });
 
     btnRecordCsv.addEventListener('click', () => {
@@ -562,7 +403,7 @@
         isRecordingCsv = true;
         btnRecordCsv.textContent = 'Stop & Save CSV';
         btnRecordCsv.classList.add('danger');
-        logEvent('Started recording 16-channel µV stream to CSV buffer...');
+        logEvent('CSV capture started (recording 16ch µV @ 250 Hz)...', 'sys');
       } else {
         isRecordingCsv = false;
         btnRecordCsv.textContent = 'Record CSV';
@@ -574,7 +415,7 @@
         a.download = `octopus16_${new Date().toISOString().replace(/[:.]/g, '-')}.csv`;
         a.click();
         URL.revokeObjectURL(url);
-        logEvent(`Saved ${csvRows.length - 1} samples to CSV file.`);
+        logEvent(`Exported ${csvRows.length - 1} samples to CSV`, 'sys');
       }
     });
 
@@ -583,15 +424,21 @@
       const active = eeg.triggerSimEvent('alpha');
       btnSimAlpha.textContent = `Eyes Closed Alpha 10 Hz (A): ${active ? 'ON' : 'OFF'}`;
       btnSimAlpha.classList.toggle('active-pill', active);
-      logEvent(`Simulator: Eyes-Closed 10 Hz Alpha rhythm ${active ? 'BOOSTED' : 'NORMAL'}.`);
+      logEvent(`Sim: 10 Hz Alpha rhythm ${active ? 'BOOSTED (eyes closed)' : 'BASELINE'}`, 'bci');
     }
     btnSimAlpha.addEventListener('click', toggleAlphaSim);
     btnSimBlink.addEventListener('click', () => eeg.triggerSimEvent('blink'));
-    btnSimClench.addEventListener('click', () => eeg.triggerSimEvent('clench'));
+    btnSimClench.addEventListener('click', () => {
+      eeg.triggerSimEvent('clench');
+      logEvent('Sim: Injected 30–90 Hz jaw-clench sEMG burst', 'warn');
+    });
     btnSimPin.addEventListener('click', () => {
       const pin = eeg.triggerSimEvent('noisy_pin');
       btnSimPin.classList.toggle('active-pill', pin >= 0);
-      logEvent(pin >= 0 ? `Simulator: Pin #${pin + 1} set to poor contact (50 Hz noise).` : 'Simulator: All 16 pins restored to clean contact.');
+      logEvent(
+        pin >= 0 ? `Sim: Pin #${pin + 1} injected with 50 Hz mains noise (>150 µV railed)` : 'Sim: All 16 pins restored to clean contact',
+        pin >= 0 ? 'warn' : 'sys'
+      );
     });
 
     window.addEventListener('keydown', (e) => {
@@ -924,25 +771,26 @@
       const { ctx, w, h } = fitCanvas(bciCanvas);
       ctx.clearRect(0, 0, w, h);
 
-      const cx = w * 0.25;
+      const cx = Math.min(w * 0.24, h * 0.55);
       const cy = h * 0.5;
-      const baseR = 20 + orbCharge * 34;
+      const maxOrbR = Math.min(cx - 10, h * 0.42);
+      const baseR = Math.max(12, maxOrbR * (0.35 + orbCharge * 0.65));
 
       // Glowing Alpha Energy Orb
-      const grad = ctx.createRadialGradient(cx, cy, 4, cx, cy, baseR * 1.5);
+      const grad = ctx.createRadialGradient(cx, cy, 3, cx, cy, baseR * 1.45);
       grad.addColorStop(0, '#bbf7d0');
       grad.addColorStop(0.5, '#22c55e');
       grad.addColorStop(1, 'rgba(34, 197, 94, 0)');
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.arc(cx, cy, baseR * 1.5, 0, Math.PI * 2);
+      ctx.arc(cx, cy, baseR * 1.45, 0, Math.PI * 2);
       ctx.fill();
 
       // Expanding Blink Shockwave Ring
       if (blinkPulseRadius > 0.02) {
-        const ringR = 24 + (1 - blinkPulseRadius) * 95;
+        const ringR = 16 + (1 - blinkPulseRadius) * (maxOrbR * 1.35);
         ctx.strokeStyle = `rgba(56, 189, 248, ${blinkPulseRadius.toFixed(2)})`;
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
         ctx.arc(cx, cy, ringR, 0, Math.PI * 2);
         ctx.stroke();
@@ -950,24 +798,25 @@
       }
 
       // Telemetry text inside sandbox
-      const tx = w * 0.52;
+      const tx = Math.max(cx + maxOrbR + 14, w * 0.44);
+      const midY = h * 0.5;
       ctx.textAlign = 'left';
       ctx.fillStyle = '#f8fafc';
-      ctx.font = '700 13px sans-serif';
-      ctx.fillText(`Alpha Orb Charge: ${(orbCharge * 100).toFixed(0)}%`, tx, 36);
+      ctx.font = '700 12px ui-monospace, monospace';
+      ctx.fillText(`ALPHA ORB: ${(orbCharge * 100).toFixed(0)}%`, tx, midY - 24);
 
       ctx.fillStyle = '#94a3b8';
-      ctx.font = '12px sans-serif';
-      ctx.fillText(`Blink Triggers Fired: ${blinkCount}`, tx, 62);
+      ctx.font = '11px ui-monospace, monospace';
+      ctx.fillText(`BLINKS   : ${blinkCount}`, tx, midY - 4);
       ctx.fillStyle = artifactGated ? '#f59e0b' : '#22c55e';
       ctx.fillText(
-        artifactGated ? 'Artifact Gate: PAUSED (Jaw/Motion detected)' : 'Artifact Gate: CLEAN EEG',
+        artifactGated ? 'GATE     : PAUSED (EMG)' : 'GATE     : CLEAN EEG',
         tx,
-        88
+        midY + 16
       );
       ctx.fillStyle = '#64748b';
-      ctx.font = '11px ui-monospace, monospace';
-      ctx.fillText('Use this loop as a template for games & neurofeedback!', tx, 114);
+      ctx.font = '10px ui-monospace, monospace';
+      ctx.fillText('Template for BCI games', tx, midY + 36);
     }
 
     function renderLoop() {

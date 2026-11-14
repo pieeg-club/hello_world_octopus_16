@@ -1,0 +1,518 @@
+/* ==========================================================================
+   Octopus 16 — BCI Hackathon Workbench Stylesheet
+   Externalized so students & AI coding agents have a tiny, clean index.html
+   context window focused strictly on HTML structure & pieeg.js logic.
+   ========================================================================== */
+
+:root {
+  --bg: #05080f;
+  --panel: #0a0f1c;
+  --panel-alt: #0d1424;
+  --border: #1b263b;
+  --border-subtle: #121a2b;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --muted-light: #94a3b8;
+  --accent: #38bdf8;
+  --indigo: #818cf8;
+  --purple: #a78bfa;
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --cyan: #06b6d4;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  padding: 8px 10px;
+  gap: 8px;
+}
+
+/* ── Top Header & Controls ───────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.brand-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 12px;
+  color: #fff;
+  letter-spacing: -0.03em;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+  flex-shrink: 0;
+}
+
+.brand-title {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.brand h1 {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #f8fafc;
+  white-space: nowrap;
+}
+
+.brand-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 2px;
+}
+
+button, select {
+  background: #131c2e;
+  color: var(--text);
+  border: 1px solid #26354d;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+button:hover, select:hover {
+  background: #1e2b45;
+  border-color: #384f73;
+}
+
+button.primary {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #fff;
+}
+button.primary:hover {
+  background: #0369a1;
+}
+
+button.sim {
+  background: #059669;
+  border-color: #34d399;
+  color: #fff;
+}
+button.sim:hover {
+  background: #047857;
+}
+
+button.danger {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+button.danger:hover {
+  background: rgba(239, 68, 68, 0.28);
+}
+
+button.active-pill {
+  background: rgba(56, 189, 248, 0.16);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+button.ghost-sm {
+  padding: 2px 7px;
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  background: #0f172a;
+  color: var(--muted-light);
+}
+
+/* ── Simulator Strip + Telemetry Bar ─────────────────────────────────────── */
+.hud-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.sim-controls {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.07);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+.sim-controls.visible {
+  display: flex;
+}
+
+.sim-controls .tag {
+  font-family: var(--font-mono);
+  color: #34d399;
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  margin-right: 4px;
+}
+
+.sim-controls .sim-hint {
+  color: var(--muted-light);
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+}
+
+.telemetry-bar {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+.stat-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.stat-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Main Workbench Grid (Fills Remaining Viewport Height) ───────────────── */
+.workbench-grid {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  min-width: 0;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  min-width: 0;
+}
+
+.panel-scope {
+  flex: 1.85;
+}
+
+.panel-bottom-left {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 0.92fr 1.28fr;
+  gap: 8px;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.panel-hex {
+  flex: 1.1;
+}
+
+.panel-fft {
+  flex: 1;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.panel-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.panel-title::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.panel-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.canvas-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: #04070e;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ── Hacker Telemetry & Event Terminal ───────────────────────────────────── */
+.terminal-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.terminal-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.event-log {
+  flex: 1;
+  min-height: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.45;
+  color: #cbd5e1;
+  background: #03060c;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 6px 8px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.log-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.log-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.log-ts {
+  color: #475569;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.log-tag {
+  font-weight: 700;
+  font-size: 10px;
+  padding: 0 4px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.log-tag.sys  { color: #38bdf8; background: rgba(56, 189, 248, 0.12); }
+.log-tag.bci  { color: #22c55e; background: rgba(34, 197, 94, 0.12); }
+.log-tag.warn { color: #f59e0b; background: rgba(245, 158, 11, 0.14); }
+.log-tag.err  { color: #ef4444; background: rgba(239, 68, 68, 0.15); }
+.log-tag.dsp  { color: #a78bfa; background: rgba(167, 139, 250, 0.12); }
+
+.log-msg {
+  color: #e2e8f0;
+}
+
+.log-count {
+  background: #1e293b;
+  color: #94a3b8;
+  font-size: 10px;
+  padding: 0 5px;
+  border-radius: 8px;
+  margin-left: auto;
+}
+
+/* ── Footer Bar ──────────────────────────────────────────────────────────── */
+.footer-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+  color: var(--muted);
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+.footer-bar code {
+  font-family: var(--font-mono);
+  color: var(--muted-light);
+}
+
+kbd {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: #e2e8f0;
+}
+
+/* Custom Scrollbar for Log Console */
+.event-log::-webkit-scrollbar {
+  width: 6px;
+}
+.event-log::-webkit-scrollbar-track {
+  background: #03060c;
+}
+.event-log::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+.event-log::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Responsive fallback for smaller screens */
+@media (max-width: 1150px) {
+  html, body {
+    height: auto;
+    overflow: auto;
+  }
+  .app-shell {
+    height: auto;
+  }
+  .telemetry-bar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .workbench-grid {
+    grid-template-columns: 1fr;
+  }
+  .panel-bottom-left {
+    grid-template-columns: 1fr;
+  }
+  .canvas-wrap {
+    min-height: 240px;
+  }
+  .event-log {
+    min-height: 180px;
+  }
+}

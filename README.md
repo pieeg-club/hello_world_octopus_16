@@ -4,7 +4,7 @@
 
 Built for university hackathons — everything is hands-on and educational, starting with flashing the board's firmware right from your browser: **flash firmware → clone → stream live 16-ch EEG (or run the 250 Hz simulator) → paste a prompt into Copilot / Claude Code / Cursor → ship a working BCI app in under 60 seconds.**
 
-> **Quick Jump:** [1. Flash & Verify (Web Tool)](#-step-1-flash--verify-octopus-16-web-flasher--cloud) · [2. Clone & Run (30s)](#-step-2-clone--run-in-30-seconds) · [3. Pick an AI Prompt & Build](#-step-3-build-your-hackathon-app-with-ai-click-a-prompt) · [4. Place Sensor on Head](#-step-4-wearing-octopus-16-hardware-cheat-sheet) · [Python Track](#-python--ml-track-bleak--numpy--csv--lsl) · [Minimal SDK Code](#-minimal-pieegjs-snippet)
+> **Quick Jump:** [1. Flash & Verify (Web Tool)](#-step-1-flash--verify-octopus-16-web-flasher--cloud) · [2. Clone & Run (30s)](#-step-2-clone--run-in-30-seconds) · [3. Pick an AI Prompt & Build](#-step-3-build-your-hackathon-app-with-ai-click-a-prompt) · [4. Place Sensor on Head](#-step-4-wearing-octopus-16-hardware-cheat-sheet) · [5. Free Hosting & Showcase](#-step-5-host-for-free--show-us-what-you-built) · [Python Track](#-python--ml-track-bleak--numpy--csv--lsl) · [Minimal SDK Code](#-minimal-pieegjs-snippet)
 
 <img width="1192" height="646" alt="image" src="https://github.com/user-attachments/assets/7c648080-07fd-481e-8494-5cbe5e0db845" />
 
@@ -27,6 +27,8 @@ For hackathons, the entire stack is educational — start by installing the firm
 ---
 
 ## ⚡ Step 2: Clone & Run in 30 Seconds
+
+> ⭐ **Hackathon tip:** Click **Star** and **Fork** (top-right of this GitHub page) before cloning — that gives your team your own GitHub copy to push code to, deploy for free, and lets us see what you built!
 
 ```bash
 # 1. Clone the starter repo
@@ -102,6 +104,20 @@ Site names below (`Pz`, `Oz`, `Fp1`, `Fp2`) follow the international [10–20 sy
 * **Fast double-blink:** ADC not detected (check that XIAO ESP32-S3 `5V/GND/3V3` pins are not seated 180° reversed!)
 
 > ⚠️ **Safety:** Octopus 16 is not a medical device. While worn on the head, power it **only from a 5 V battery power bank**, never connected to mains power or a wall-plugged laptop.
+
+---
+
+## 🚀 Step 5: Host for Free & Show Us What You Built!
+
+Because your app is just static HTML + [`pieeg.js`](./pieeg.js) with **zero backend**, you can publish a live `https://` link (required by Web Bluetooth outside `localhost`) for judges and teammates in seconds:
+
+* **GitHub Pages (Free):** Push to your GitHub fork → **Settings → Pages → Deploy from branch (`main`)**. Your live BCI app is now online at `https://<your-username>.github.io/hello_world_octopus_16/`!
+* **Vercel / Netlify / Cloudflare Pages (Free):** Drag-and-drop your project folder onto [Vercel](https://vercel.com) or [Netlify Drop](https://app.netlify.com/drop) for an instant `https://` URL.
+
+### 🏆 Built Something Cool? Let Us Know!
+Don't build in silence — we want to see what worked and feature student hackathon projects!
+1. **⭐ Star & Fork this repo** so we can discover your fork in the network graph.
+2. **[Open a "Show & Tell" Issue](https://github.com/pieeg-club/hello_world_octopus_16/issues/new?title=Show+%26+Tell:+&body=Team+/+Project+Name:%0ALive+Demo+or+Repo+Link:%0AWhat+worked+(or+what+broke!):)** (or drop a PR adding your project link) with your repo URL, a screenshot/video, and what worked or broke — it takes 30 seconds and directly helps us improve Octopus 16!
 
 ---
 

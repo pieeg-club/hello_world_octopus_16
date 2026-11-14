@@ -4,19 +4,21 @@
 
 Built for university hackathons — everything is hands-on and educational, starting with flashing the board's firmware right from your browser: **flash firmware → clone → stream live 16-ch EEG (or run the 250 Hz simulator) → paste a prompt into Copilot / Claude Code / Cursor → ship a working BCI app in under 60 seconds.**
 
-> **Quick Jump:** [1. Flash Firmware (Web Tool)](#-step-1-flash-octopus-16-firmware-web-flasher) · [2. Clone & Run (30s)](#-step-2-clone--run-in-30-seconds) · [3. Pick an AI Prompt & Build](#-step-3-build-your-hackathon-app-with-ai-click-a-prompt) · [4. Place Sensor on Head](#-step-4-wearing-octopus-16-hardware-cheat-sheet) · [Python Track](#-python--ml-track-bleak--numpy--csv--lsl) · [Minimal SDK Code](#-minimal-pieegjs-snippet)
+> **Quick Jump:** [1. Flash & Verify (Web Tool)](#-step-1-flash--verify-octopus-16-web-flasher--cloud) · [2. Clone & Run (30s)](#-step-2-clone--run-in-30-seconds) · [3. Pick an AI Prompt & Build](#-step-3-build-your-hackathon-app-with-ai-click-a-prompt) · [4. Place Sensor on Head](#-step-4-wearing-octopus-16-hardware-cheat-sheet) · [Python Track](#-python--ml-track-bleak--numpy--csv--lsl) · [Minimal SDK Code](#-minimal-pieegjs-snippet)
 
 ---
 
-## 🔥 Step 1: Flash Octopus 16 Firmware (Web Flasher)
+## 🔥 Step 1: Flash & Verify Octopus 16 (Web Flasher + Cloud)
 
-For hackathons, the entire stack is educational — including installing the firmware onto your **Octopus 16** (Seeed XIAO ESP32-S3) before streaming! Zero IDE or toolchain setup required:
+For hackathons, the entire stack is educational — start by installing the firmware onto your **Octopus 16** (Seeed XIAO ESP32-S3) and verifying the live 16-channel stream in your browser before writing a single line of code:
 
 1. Plug your **Octopus 16** into your computer via USB-C.
 2. Open the **OctoBridge Web Flasher** in **Chrome** or **Edge**:
    👉 **[https://octobridge.pieeg.com/flash](https://octobridge.pieeg.com/flash)**
 3. Click **Flash**, select the USB serial port, and wait a few seconds for the firmware install to complete.
 4. *(Unplug from your laptop and switch to a **5 V battery power bank** before wearing the sensor on your head!)*
+5. **Instant Hardware Test:** Open **[https://cloud.pieeg.com](https://cloud.pieeg.com)** in Chrome/Edge, pair with `Octopus-16-XXXX` over Bluetooth, and confirm all 16 channels are streaming live!
+   *(💡 **Important:** Click **Disconnect** or close the `cloud.pieeg.com` tab before moving to Step 2 — BLE only allows one active connection at a time!)*
 
 > 💻 **Don't have the hardware in hand yet?** Skip straight to [Step 2](#-step-2-clone--run-in-30-seconds) and use the built-in **250 Hz Simulator**.
 

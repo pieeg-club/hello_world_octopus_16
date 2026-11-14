@@ -1,5 +1,12 @@
 # Hello Octopus 16 — 60-Second BCI Hackathon Starter ⚡
 
+[![Discord](https://img.shields.io/badge/Discord-Join%201000%2B%20Builders-5865F2?logo=discord&logoColor=white)](https://discord.gg/neJ45FR6Sv)
+[![PiEEG Cloud](https://img.shields.io/badge/PiEEG_Cloud-Live_Browser_Demos-06b6d4)](https://cloud.pieeg.com)
+[![Web Flasher](https://img.shields.io/badge/OctoBridge-Web_Flasher-8b5cf6)](https://octobridge.pieeg.com/flash)
+[![Docs](https://img.shields.io/badge/Docs-docs.pieeg.com-10b981)](https://docs.pieeg.com)
+[![Octopus 16 Guide](https://img.shields.io/badge/Hardware-Octopus_16-f59e0b)](https://pieeg.com/hardware/octopus-16)
+[![Star Repo](https://img.shields.io/github/stars/pieeg-club/hello_world_octopus_16?style=social)](https://github.com/pieeg-club/hello_world_octopus_16)
+
 **16 channels of 24-bit wireless EEG in a 26 mm coin-sized sensor. Zero gel, zero ear clips, zero backend required.**
 
 Built for university hackathons — everything is hands-on and educational, starting with flashing the board's firmware right from your browser: **flash firmware → clone → stream live 16-ch EEG (or run the 250 Hz simulator) → paste a prompt into Copilot / Claude Code / Cursor → ship a working BCI app in under 60 seconds.**
@@ -114,10 +121,20 @@ Because your app is just static HTML + [`pieeg.js`](./pieeg.js) with **zero back
 * **GitHub Pages (Free):** Push to your GitHub fork → **Settings → Pages → Deploy from branch (`main`)**. Your live BCI app is now online at `https://<your-username>.github.io/hello_world_octopus_16/`!
 * **Vercel / Netlify / Cloudflare Pages (Free):** Drag-and-drop your project folder onto [Vercel](https://vercel.com) or [Netlify Drop](https://app.netlify.com/drop) for an instant `https://` URL.
 
-### 🏆 Built Something Cool? Let Us Know!
-Don't build in silence — we want to see what worked and feature student hackathon projects!
-1. **⭐ Star & Fork this repo** so we can discover your fork in the network graph.
-2. **[Open a "Show & Tell" Issue](https://github.com/pieeg-club/hello_world_octopus_16/issues/new?title=Show+%26+Tell:+&body=Team+/+Project+Name:%0ALive+Demo+or+Repo+Link:%0AWhat+worked+(or+what+broke!):)** (or drop a PR adding your project link) with your repo URL, a screenshot/video, and what worked or broke — it takes 30 seconds and directly helps us improve Octopus 16!
+### 🏆 Built Something Cool? (Or Stuck at 2 AM?)
+Don't build in silence — we actively mentor hackathons and feature standout student projects on **[pieeg.com/community](https://pieeg.com/community)**!
+* 💬 **Need live debugging help during the hackathon?** Hop into the **[PiEEG Discord (`discord.gg/neJ45FR6Sv`)](https://discord.gg/neJ45FR6Sv)** (2,000+ builders & PiEEG engineers).
+* ⭐ **Star & Fork this repo** (top-right on GitHub) so we can discover your team's fork and commits.
+* 🚀 **[Submit Your Hackathon Project (1-Click Issue)](https://github.com/pieeg-club/hello_world_octopus_16/issues/new?title=Show+%26+Tell:+&body=Team+/+Project+Name:%0ALive+Demo+or+Repo+Link:%0AWhat+worked+(or+what+broke!):)** — drop your repo/demo link and tell us what worked or broke!
+
+### 🌐 Free PiEEG Ecosystem Tools for Hackers
+| Tool | Link | What to Use It For |
+|---|---|---|
+| **PiEEG Cloud & Demos** | **[cloud.pieeg.com](https://cloud.pieeg.com)** | Zero-install 16-ch viewer, Signal Lab, & P300 / SSVEP / XR lobbies |
+| **OctoBridge & Web Flasher** | **[octobridge.pieeg.com](https://octobridge.pieeg.com/flash)** | One-click browser firmware flasher & hardware block lab |
+| **bioIDE & Live Lab** | **[ide.pieeg.com](https://ide.pieeg.com)** · **[cloud.pieeg.com/lab](https://cloud.pieeg.com/lab)** | Write & share live JS DSP/classifier pipelines in the browser |
+| **1020 Academy & Docs** | **[1020.pieeg.com](https://1020.pieeg.com)** · **[docs.pieeg.com](https://docs.pieeg.com)** | Interactive EEG 10–20 placement guide, hardware docs & tutorials |
+| **Octopus 16 Hardware Guide** | **[pieeg.com/hardware/octopus-16](https://pieeg.com/hardware/octopus-16)** | Interactive pinout, 3D-printable enclosures & setup checklist |
 
 ---
 

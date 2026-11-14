@@ -80,6 +80,8 @@ python python_quickstart.py --csv trial.csv  # 3. Record 16-ch µV stream to CSV
 ## 🧠 Step 4: Wearing Octopus 16 (Hardware Cheat Sheet)
 
 ### Where to Place It on the Head
+Site names below (`Pz`, `Oz`, `Fp1`, `Fp2`) follow the international [10–20 system (EEG)](https://en.wikipedia.org/wiki/10%E2%80%9320_system_(EEG)). Octopus 16 covers one localized spot, not a full-cap montage.
+
 1. **Top-Back (`Pz`) — Best for Alpha Relaxation (`8–13 Hz`):** Part the hair, press the 18 spring-loaded pogo pins straight down (`90°`), hold snug with a headband, and close your eyes. Watch Alpha power surge.
 2. **Back (`Oz`) — Visual Cortex & SSVEP:** Ideal for steady-state visually evoked potentials (looking at 10 Hz / 12 Hz / 15 Hz flickering targets).
 3. **Forehead (`Fp1` / `Fp2`) — Blinks & EMG Game Triggers:** Zero hair parting needed; gives crisp `>120 µV` eye-blink spikes and jaw-clench bursts for instant arcade controls.
